@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaDecode : Master Class</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           CHARTE GRAPHIQUE (DARK MODE)
+           ========================================= */
+        :root {
+            --bg-color: #000000;
+            --card-bg: #121212;
+            --border-color: #333;
+            --text-main: #FAFAFA;
+            --text-muted: #A8A8A8;
+            --insta-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --accent: #bc1888;
+            --danger: #ed4956;
+            --success: #00C853; 
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+
+        /* HEADER */
+        header {
+            background: rgba(18, 18, 18, 0.95);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        header h1 { 
+            margin: 0; font-size: 1.4rem; 
+            background: var(--insta-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* SECTIONS */
+        section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h2 { 
+            font-size: 1.1rem; margin-top: 0; display: flex; align-items: center; gap: 10px; 
+            border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;
+            color: var(--text-main);
+        }
+        .icon { font-size: 1.3rem; }
+
+        /* BOUTONS & FEEDBACK */
+        .btn-choice {
+            width: 100%; padding: 15px; margin: 8px 0; background: #1a1a1a; border: 1px solid #333;
+            color: white; border-radius: 8px; cursor: pointer; text-align: left; font-weight: 500; transition: 0.2s;
+        }
+        .btn-choice:hover { background: #262626; border-color: var(--text-muted); }
+
+        .feedback { 
+            display: none; margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 0.9rem; 
+            background: #222; border-left: 3px solid white; animation: slideIn 0.3s;
+        }
+
+        /* VIDÉO */
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;
+            background: #000; margin-bottom: 15px;
+        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* TIMESTAMPS */
+        .deck { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .card-concept {
+            min-width: 130px; background: #262626; border-radius: 8px; padding: 10px;
+            cursor: pointer; border: 1px solid transparent; transition: 0.2s;
+        }
+        .card-concept:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .card-concept h4 { margin: 0 0 5px 0; font-size: 0.8rem; color: #fff; }
+        .tag-time { font-size: 0.7rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; }
+
+        /* =========================================
+           STYLES DU QUIZ "INGÉNIEUR" (ÉTAPE 3)
+           ========================================= */
+        .quiz-container { text-align: center; }
+        
+        .progress-bar { width: 100%; height: 6px; background: #333; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--insta-gradient); width: 0%; transition: width 0.3s; }
+
+        .question-box { margin-bottom: 20px; animation: fadeIn 0.4s; }
+        .q-context { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; font-style: italic; }
+        .q-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+
+        .quiz-btn {
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px;
+            background: #262626; border: 2px solid #333; border-radius: 10px;
+            color: white; font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-align: left;
+        }
+        .quiz-btn:hover { background: #333; }
+        
+        .quiz-btn.correct { border-color: var(--success); background: rgba(0, 200, 83, 0.1); }
+        .quiz-btn.wrong { border-color: var(--danger); background: rgba(237, 73, 86, 0.1); opacity: 0.6; }
+
+        .explanation { 
+            display: none; margin-top: 15px; padding: 15px; background: #1a1a1a; 
+            border-radius: 8px; text-align: left; font-size: 0.9rem; border: 1px solid #333;
+        }
+        .next-btn {
+            background: var(--text-main); color: black; border: none; padding: 10px 25px;
+            border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 15px; display: none;
+        }
+
+        .score-board { display: none; text-align: center; padding: 20px; }
+        .final-score { font-size: 2.5rem; font-weight: 800; margin: 10px 0; background: var(--insta-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .replay-btn {
+            background: transparent; border: 2px solid var(--accent); color: var(--accent);
+            padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 20px;
+            transition: 0.2s;
+        }
+        .replay-btn:hover { background: var(--accent); color: white; }
+
+        /* =========================================
+           STYLES DU TRI (ÉTAPE 4)
+           ========================================= */
+        .sorting-game { text-align: center; }
+        .card-deck { min-height: 80px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .draggable { background: white; color: black; padding: 12px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; animation: popIn 0.3s; }
+        .zones { display: flex; gap: 10px; }
+        .zone { flex: 1; padding: 20px 10px; border: 2px dashed #444; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .zone:hover { border-color: #777; background: #1a1a1a; }
+        .reset-sort-btn { display: none; margin: 20px auto; background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes popIn { 0% { transform: scale(0.8); } 100% { transform: scale(1); } }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>InstaDecode</h1>
+</header>
+
+<div class="container">
+
+    <section id="step1">
+        <h2><span class="icon">📸</span> Le Crash Test</h2>
+        <p>Tu postes une photo. 15 minutes plus tard : 3 likes. Ta réaction ?</p>
+        <button class="btn-choice" onclick="checkStep1(1)">"Pas grave, je m'en fiche."</button>
+        <button class="btn-choice" onclick="checkStep1(2)">"J'ai honte, je supprime."</button>
+        <div id="fb-step1" class="feedback"></div>
+    </section>
+
+    <section id="step2">
+        <h2><span class="icon">🕵️</span> L'Investigation (Vidéo)</h2>
+        <div class="video-container">
+            <iframe id="video-player" src="https://www.youtube.com/embed/gauWE-pqetk?enablejsapi=1" title="YouTube" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="deck">
+            <div class="card-concept" onclick="seekVideo(67)">
+                <h4>✨ Les Filtres</h4>
+                <span class="tag-time">1:07</span>
+            </div>
+            <div class="card-concept" onclick="seekVideo(126)">
+                <h4>🧠 Loi de Fogg</h4>
+                <span class="tag-time">2:06</span>
+            </div>
+            <div class="card-concept" onclick="seekVideo(172)">
+                <h4>❤️ Validation</h4>
+                <span class="tag-time">2:52</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="step3">
+        <h2><span class="icon">⚙️</span> Quiz : Deviens l'Ingénieur</h2>
+        <p>Mets-toi à la place du créateur d'Instagram. Ton but : utiliser la psychologie pour rendre l'utilisateur accro.</p>
+        
+        <div class="quiz-container">
+            <div class="progress-bar"><div id="quiz-progress" class="progress-fill"></div></div>
+
+            <div id="quiz-content">
+                </div>
+
+            <div id="quiz-score" class="score-board">
+                <h3>Quiz Terminé !</h3>
+                <p>Ton score de "Manipulateur" :</p>
+                <div id="final-score-display" class="final-score">0/3</div>
+                <p id="score-comment" style="color:#aaa;"></p>
+                <button class="replay-btn" onclick="startQuiz()">🔄 Recommencer le Quiz</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="step4">
+        <h2><span class="icon">🧠</span> Le Tri Final</h2>
+        <p>Besoins Humains vs Business de l'Appli.</p>
+        <div class="sorting-game">
+            <div id="deck-cards" class="card-deck"></div>
+            <div class="zones">
+                <div class="zone" style="border-color:var(--success);" onclick="checkSort('human', this)">
+                    <h4 style="color:var(--success);">👤 Humain</h4>
+                </div>
+                <div class="zone" style="border-color:var(--danger);" onclick="checkSort('app', this)">
+                    <h4 style="color:var(--danger);">🤖 Appli</h4>
+                </div>
+            </div>
+            <div id="game-feedback" class="feedback"></div>
+            <button id="reset-sort" class="reset-sort-btn" onclick="initSort()">Recommencer le Tri</button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /* --- 1. QUIZ INTRO --- */
+    function checkStep1(choice) {
+        const fb = document.getElementById('fb-step1');
+        if(choice === 1) {
+            fb.innerHTML = "🤨 <strong>Vraiment ?</strong> C'est la réponse mature. Mais ton cerveau primitif, lui, attend la validation du groupe (Dopamine).";
+            fb.style.borderColor = "#f09433";
+        } else {
+            fb.innerHTML = "✅ <strong>Normal.</strong> Comme dit dans la vidéo, le 'Like' est perçu biologiquement comme de l'amour. Pas de like = Danger d'exclusion.";
+            fb.style.borderColor = "#0095f6";
+        }
+        fb.style.display = 'block';
+    }
+
+    /* --- 2. YOUTUBE API --- */
+    var player;
+    function onYouTubeIframeAPIReady() { player = new YT.Player('video-player', { events: {} }); }
+    function seekVideo(sec) { if(player){ player.seekTo(sec, true); player.playVideo(); } }
+    var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+
+    /* --- 3. QUIZ "INGÉNIEUR" (LOGIQUE REJOUABLE) --- */
+    const questions = [
+        {
+            context: "Situation : L'utilisateur veut poster une photo mais il se trouve 'moche' et hésite (Motivation faible).",
+            question: "Selon la loi de Fogg (Vidéo 2:06), que fais-tu pour qu'il poste quand même ?",
+            options: [
+                { text: "Je lui envoie une notification 'Tu me manques'.", correct: false, feedback: "Non, ça c'est un déclencheur." },
+                { text: "Je lui propose des filtres beauté automatiques.", correct: true, feedback: "✅ Exact ! Tu augmentes sa 'Capacité' (Facilité) en rendant la photo belle sans effort." },
+                { text: "Je ne fais rien.", correct: false, feedback: "Mauvaise réponse. Tu perds du contenu." }
+            ]
+        },
+        {
+            context: "Situation : L'utilisateur a quitté l'appli depuis 20 minutes.",
+            question: "Quelle notification envoies-tu pour créer un 'Trigger' efficace ?",
+            options: [
+                { text: "'Viens voir les nouvelles conditions d'utilisation'.", correct: false, feedback: "Ennuyeux. Personne ne clique." },
+                { text: "'Caroline a posté une photo'.", correct: false, feedback: "Bof. Trop générique." },
+                { text: "'🔥 Ton crush a liké ta photo'.", correct: true, feedback: "✅ Bingo ! Validation sociale + Imprévisibilité = Retour immédiat." }
+            ]
+        },
+        {
+            context: "Situation : Tu veux que l'utilisateur scrolle pendant 1h.",
+            question: "Quel type de contenu l'algorithme doit-il privilégier ?",
+            options: [
+                { text: "Des photos de paysages calmes.", correct: false, feedback: "Non, ça apaise. On veut de l'excitation." },
+                { text: "Des gens 'parfaits' (Richesse, Beauté).", correct: true, feedback: "✅ Oui. La 'Comparaison Sociale' crée un manque qui pousse à scroller pour se rassurer." },
+                { text: "Des documentaires historiques.", correct: false, feedback: "Trop intellectuel pour Instagram." }
+            ]
+        }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+
+    function startQuiz() {
+        currentQ = 0;
+        score = 0;
+        document.getElementById('quiz-score').style.display = 'none';
+        document.getElementById('quiz-content').style.display = 'block';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQ];
+        const container = document.getElementById('quiz-content');
+        
+        // Mise à jour barre progression
+        document.getElementById('quiz-progress').style.width = ((currentQ) / questions.length * 100) + "%";
+
+        let html = `
+            <div class="question-box">
+                <div class="q-context">${q.context}</div>
+                <div class="q-text">${q.question}</div>
+                <div id="options-area">
+                    ${q.options.map((opt, index) => `
+                        <button class="quiz-btn" onclick="selectAnswer(${index}, this)">${opt.text}</button>
+                    `).join('')}
+                </div>
+                <div id="explanation-${currentQ}" class="explanation"></div>
+                <button id="next-btn-${currentQ}" class="next-btn" onclick="nextQuestion()">Question Suivante ➔</button>
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    function selectAnswer(index, btnElement) {
+        // Désactiver tous les boutons
+        const btns = document.querySelectorAll('.quiz-btn');
+        btns.forEach(b => b.disabled = true);
+
+        const q = questions[currentQ];
+        const isCorrect = q.options[index].correct;
+        const explDiv = document.getElementById(`explanation-${currentQ}`);
+        const nextBtn = document.getElementById(`next-btn-${currentQ}`);
+
+        if(isCorrect) {
+            btnElement.classList.add('correct');
+            score++;
+            explDiv.style.borderColor = "var(--success)";
+            explDiv.innerHTML = q.options[index].feedback;
+        } else {
+            btnElement.classList.add('wrong');
+            explDiv.style.borderColor = "var(--danger)";
+            explDiv.innerHTML = q.options[index].feedback;
+        }
+
+        explDiv.style.display = 'block';
+        nextBtn.style.display = 'inline-block';
+        if(currentQ === questions.length - 1) nextBtn.innerText = "Voir mon Résultat";
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if(currentQ < questions.length) {
+            loadQuestion();
+        } else {
+            showScore();
+        }
+    }
+
+    function showScore() {
+        document.getElementById('quiz-content').style.display = 'none';
+        document.getElementById('quiz-score').style.display = 'block';
+        document.getElementById('final-score-display').innerText = score + "/" + questions.length;
+        document.getElementById('quiz-progress').style.width = "100%";
+        
+        const comment = document.getElementById('score-comment');
+        if(score === 3) comment.innerText = "Tu penses exactement comme l'algorithme. Effrayant, non ?";
+        else if(score === 0) comment.innerText = "Tu es trop humain pour travailler chez Instagram !";
+        else comment.innerText = "Tu commences à comprendre les rouages de la machine.";
+    }
+
+    // Lancer le quiz au chargement
+    startQuiz();
+
+    /* --- 4. GESTION DU TRI (REJOUABLE) --- */
+    const sortData = [
+        { text: "Besoin d'être aimé", type: "human" },
+        { text: "Vendre de la Pub", type: "app" },
+        { text: "Comparer sa vie", type: "human" },
+        { text: "Capter ton attention", type: "app" }
+    ];
+    let sortIdx = 0;
+
+    function initSort() {
+        sortIdx = 0;
+        document.getElementById('game-feedback').style.display = 'none';
+        document.getElementById('reset-sort').style.display = 'none';
+        loadSortCard();
+    }
+
+    function loadSortCard() {
+        const deck = document.getElementById('deck-cards');
+        if(sortIdx < sortData.length) {
+            deck.innerHTML = `<div class="draggable">${sortData[sortIdx].text}</div>`;
+        } else {
+            deck.innerHTML = "";
+            const fb = document.getElementById('game-feedback');
+            fb.innerHTML = "🏆 <strong>Terminé !</strong> Tu fais la différence entre tes émotions et leur business.";
+            fb.style.display = 'block';
+            fb.style.borderColor = "var(--success)";
+            document.getElementById('reset-sort').style.display = 'block';
+        }
+    }
+
+    function checkSort(type, zone) {
+        if(sortIdx >= sortData.length) return;
+        if(type === sortData[sortIdx].type) {
+            zone.style.background = "#333";
+            setTimeout(() => zone.style.background = "", 200);
+            sortIdx++;
+            loadSortCard();
+        } else {
+            zone.style.borderColor = "var(--danger)";
+            setTimeout(() => zone.style.borderColor = "#444", 300);
+        }
+    }
+    
+    initSort();
+
+</script>
+</body>
+</html>
